@@ -6,18 +6,17 @@ class Node():
         self.visited = False
         self.neighbors = []
 
-def dfs_visit(G, idx, vertices, s):
+def dfs_visit(idx, vertices, s):
     v = vertices[idx]
     v.visited = True
     for neighbor in v.neighbors:
         if not neighbor.visited:
-            dfs_visit(G, neighbor.idx, vertices, s)
+            dfs_visit(neighbor.idx, vertices, s)
     s.append(v)
 
 def topological_sort(DAG):
     vertices = []
     n = len(DAG)
-    s = deque()
 
     for i in range(n): #init vertices
         v = Node()
@@ -33,7 +32,7 @@ def topological_sort(DAG):
     idx = 0
     while idx < n:
         if not vertices[idx].visited:
-            dfs_visit(DAG, idx, vertices, s)
+            dfs_visit(idx, vertices, s)
         idx += 1
 
     return s
