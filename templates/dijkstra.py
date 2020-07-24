@@ -1,5 +1,5 @@
 class Node():
-    def __init__(self):
+    def __init__(self, idx):
         self.idx = None
         self.neighbors = []
         self.d = float('inf')
@@ -18,19 +18,19 @@ def heapify_top_down(heap, n, i):
     l = left_child(i)
     r = right_child(i)
 
-    if l < n and heap[l] < heap[i]: #jesli lewe dziecko istnieje i jest mniejsze niz root
+    if l < n and heap[l][1] < heap[i][1]: #jesli lewe dziecko istnieje i jest mniejsze niz root
         min_idx = l
-    if r < n and heap[r] < heap[min_idx]: #jesli prawe dziecko jest jeszcze mniejsze
+    if r < n and heap[r][1] < heap[min_idx][1]: #jesli prawe dziecko jest jeszcze mniejsze
         min_idx = r
     if min_idx != i: #jesli ktores dziecko jest mniejsze od roota
-        heap[i], heap[min_idx] = heap[min_idx], heap[i]
+        heap[i][1], heap[min_idx][1] = heap[min_idx][1], heap[i][1]
         heapify_top_down(heap, n, min_idx)
 
 def heapify_bottom_up(heap, i):
     p = parent(i)
     if p >= 0:
-        if heap[i] < heap[p]:
-            heap[i], heap[p] = heap[p], heap[i]
+        if heap[i][1] < heap[p][1]:
+            heap[i][1], heap[p][1] = heap[p][1], heap[i][1]
             heapify_bottom_up(heap, p)
 
 def insert(heap, n, val):
@@ -50,4 +50,41 @@ def relax(G, u, v):
         v.d = u.d + G[u][v]
 
 def shortest_path(G, source):
-    pass
+    vertices = []
+    q = []
+    n = len(G)
+    for i in range(n): #init wierzcholkow
+        v = Node(i)
+        vertices.append(Node)
+
+    for i in range(n): #init krawedzi
+        for j in range(n):
+            if G[i][j] > 0:
+                vertices[i].neighbors.append[(vertices[j], G[i][j])]
+
+    s = vertices[source]
+    s.d = 0
+    s.visited = True
+    insert(q, len(q) + 1, s)
+    while len(q) > 0:
+        v = pop(q, len(q))
+        for neighbor in v.neighbors:
+            if not neighbor.visited:
+                neighbor.visited = True
+                relax(G, v, neighbor)
+
+    for v in vertices:
+        print(v.idx, v.d)
+
+G1 = [
+    [0, 1, 0, 11, 5, 0, 0], 
+    [1, 0, 0, 5, 0, 0, 0], 
+    [0, 0, 0, 0, 0, 11, 0], 
+    [11, 5, 0, 0, 0, 0, 0], 
+    [5, 0, 0, 0, 0, 42, 3], 
+    [0, 0, 11, 0, 42, 0, 7], 
+    [0, 0, 0, 0, 3, 7, 0], 
+
+]
+
+shortest_path(G1, 2)

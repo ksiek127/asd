@@ -4,7 +4,7 @@ class Node(): #dziala
         self.preys = []
         self.visited = False
 
-class hunting_list():
+class HuntingList():
     def __init__(self, predator, prey):
         self.next = None
         self.predator = predator
