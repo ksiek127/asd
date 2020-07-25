@@ -4,28 +4,29 @@ class Node():
         self.visited = False
         self.neighbors = []
 
-def dfs_visit(G, start, vertices):
-    vertices[start].visited = True
-    print(vertices[start].idx)
-    for neighbor in vertices[start].neighbors:
-            if not neighbor.visited:
-                dfs_visit(G, neighbor.idx, vertices)
+def dfs_visit(idx, vertices):
+    v = vertices[idx]
+    v.visited = True
+    print(v.idx)
+    for neighbor in v.neighbors:
+        if not neighbor.visited:
+            dfs_visit(neighbor.idx, vertices)
 
-def dfs(G, start):
+def dfs(G, idx):
     vertices = []
     n = len(G)
 
-    for i in range(n): #init vertices
+    for i in range(n): #wczytuje wierzcholki
         v = Node()
         v.idx = i
         vertices.append(v)
 
-    for i in range(n): #init edges
+    for i in range(n): #wczytuje krawedzie
         for j in range(n):
             if G[i][j] == 1:
                 vertices[i].neighbors.append(vertices[j])
 
-    dfs_visit(G, start, vertices)
+    dfs_visit(idx, vertices)
 
 G1 = [
     [0, 1, 0, 0, 0, 0, 0],
