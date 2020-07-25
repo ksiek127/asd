@@ -3,7 +3,7 @@ from collections import deque
 class Node():
     def __init__(self):
         self.idx = None
-        # self.visited = False
+        self.visited = False
         self.neighbors = []
         self.d = 0
         self.part = 0
@@ -23,7 +23,7 @@ def shortest_path(G, start, end): #graf skierowany
                 vertices[i].neighbors.append((vertices[j], G[i][j])) #(wierzcholek, waga krawedzi)
     
     v = vertices[start]
-    # v.visited = True
+    v.visited = True
     v.d = 0
     q.appendleft(v)
     while q:
@@ -35,12 +35,13 @@ def shortest_path(G, start, end): #graf skierowany
         else: #jesli to jest 'normalny' wierzcholek
             if v.idx == end:
                 return v.d
+            v.visited = True
             for neigh in v.neighbors: #dodaje nieodwiedzonych sasiadow do kolejki
-                # if not neigh[0].visited:
-                #     neigh[0].visited = True
-                neigh[0].d = v.d + 1
-                neigh[0].part = neigh[1] - 1
-                q.appendleft(neigh[0])
+                if not neigh[0].visited:
+                    # neigh[0].visited = True
+                    neigh[0].d = v.d
+                    neigh[0].part = neigh[1]
+                    q.appendleft(neigh[0])
     return -1 #sciezka nie istnieje
 
 G1 = [
@@ -51,7 +52,8 @@ G1 = [
     [0, 0, 0, 0, 0, 0, 0, 3], 
     [0, 0, 0, 0, 0, 0, 3, 0], 
     [0, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 7, 0], 
+    [0, 0, 0, 0, 0, 0, 7, 0] 
 ]
 
 print(shortest_path(G1, 0, 6)) #9
+print(shortest_path(G1, 0, 7)) #7
