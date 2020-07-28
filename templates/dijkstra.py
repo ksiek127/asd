@@ -1,8 +1,10 @@
+#dziala
 class Node():
     def __init__(self, idx):
-        self.idx = None
-        self.neighbors = []
+        self.idx = idx
         self.d = float('inf')
+        self.pos = None
+        self.neighbors = []
 
 def parent(i): #zwraca indeks rodzica
         return (i-1) // 2
@@ -13,66 +15,64 @@ def left_child(i): #indeks lewego dziecka
 def right_child(i): #indeks prawego dziecka
         return 2 * i + 2
 
-def heapify_top_down(heap, n, i):
-    min_idx = i
-    l = left_child(i)
-    r = right_child(i)
+def heapify(heap, i, size):
+    smallest = i #najmniejszy element sposrod korzenia, lewego i prawego dziecka
+    left = left_child(i)
+    right = right_child(i)
+    if left < size and heap[left].d < heap[smallest].d:
+        smallest = left
+    if right < size and heap[right].d < heap[smallest].d:
+        smallest = right
+    if smallest != i: #jesli ktores dziecko jest mniejsze od rodzica
+        heap[smallest].pos = i
+        heap[i].pos = smallest
+        heap[smallest], heap[i] = heap[i], heap[smallest]
+        heapify(heap, smallest, size)
 
-    if l < n and heap[l][1] < heap[i][1]: #jesli lewe dziecko istnieje i jest mniejsze niz root
-        min_idx = l
-    if r < n and heap[r][1] < heap[min_idx][1]: #jesli prawe dziecko jest jeszcze mniejsze
-        min_idx = r
-    if min_idx != i: #jesli ktores dziecko jest mniejsze od roota
-        heap[i][1], heap[min_idx][1] = heap[min_idx][1], heap[i][1]
-        heapify_top_down(heap, n, min_idx)
+def get_min(heap, size):
+    root = heap[0]
+    heap[0].pos = size - 1
+    heap[size - 1].pos = 0
+    heap[0] = heap[size - 1]
+    heapify(heap, 0, size)
+    return root
 
-def heapify_bottom_up(heap, i):
-    p = parent(i)
-    if p >= 0:
-        if heap[i][1] < heap[p][1]:
-            heap[i][1], heap[p][1] = heap[p][1], heap[i][1]
-            heapify_bottom_up(heap, p)
+def update_pos(heap, v):
+    i = v.pos
+    while i > 0 and heap[i].d < heap[parent(i)].d:
+        heap[i].pos = parent(i)
+        heap[parent(i)].pos = i
+        heap[i], heap[parent(i)] = heap[parent(i)], heap[i]
+        i = parent(i)
 
-def insert(heap, n, val):
-    # n += 1 #zwiekszam rozmiar kopca
-    heap.append(val)
-    heapify_bottom_up(heap, n-1)
-
-def pop(heap, n): #usuwam najmniejszy element i go zwracam
-    val = heap[0]
-    heap[0] = heap[n-1]
-    del heap[n-1] #usuwam ostatni element
-    heapify_top_down(heap, n-1, 0) #naprawiam kopiec
-    return val
-
-def relax(G, u, v):
-    if v.d > u.d + G[u][v]:
-        v.d = u.d + G[u][v]
+def relax(dist, heap, u, v):
+    if v.d > u.d + dist:
+        v.d = u.d + dist
+        update_pos(heap, v) #aktualizacja kolejki priorytetowej
 
 def shortest_path(G, source):
+    n = len(G)
     vertices = []
     q = []
-    n = len(G)
-    for i in range(n): #init wierzcholkow
+    size = n
+    for i in range(n): #wczytuje wierzcholki
         v = Node(i)
-        vertices.append(Node)
-
-    for i in range(n): #init krawedzi
+        vertices.append(v)
+        q.append(v)
+        v.pos = i #miejsce w kolejce priorytetowej
+    for i in range(n): #wczytuje krawedzie
         for j in range(n):
-            if G[i][j] > 0:
-                vertices[i].neighbors.append[(vertices[j], G[i][j])]
-
-    s = vertices[source]
-    s.d = 0
-    s.visited = True
-    insert(q, len(q) + 1, s)
-    while len(q) > 0:
-        v = pop(q, len(q))
-        for neighbor in v.neighbors:
-            if not neighbor.visited:
-                neighbor.visited = True
-                relax(G, v, neighbor)
-
+            if G[i][j] != 0:
+                vertices[i].neighbors.append((vertices[j], G[i][j]))
+    v = vertices[source]
+    v.d = 0
+    update_pos(q, v)
+    while size:
+        u = get_min(q, size)
+        size -= 1
+        for neighbor in u.neighbors:
+            v = neighbor[0]
+            relax(neighbor[1], q, u, v)
     for v in vertices:
         print(v.idx, v.d)
 
