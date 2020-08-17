@@ -1,9 +1,9 @@
 #raczej dziala
 class Node():
     def __init__(self):
-        self.primes = [] #liczby pierwsze w postaci napisu
         self.left = None #lewe dziecko
         self.right = None #prawe dziecko
+        self.is_end = False #czy tu sie konczy napis, wazne, bo napisy moga sie w sobie zawierac
 
 def insert(root, s): #wstawianie liczby do drzewa
     r = root #kopia wskaznika
@@ -18,7 +18,7 @@ def insert(root, s): #wstawianie liczby do drzewa
                 right = Node()
                 r.right = right
             r = r.right
-    r.primes.append(s)
+    r.is_end = True
 
 def contains(root, x): #czy drzewo zawiera wartosc x
     r = root
