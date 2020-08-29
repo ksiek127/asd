@@ -4,6 +4,7 @@ class Node(): #chyba ok
         self.right = None
         self.left = None
         self.parent = None
+        self.nr_of_elements = 0 #ilosc elementow w poddrzewie
 
 def find(x, root):
     r = root
@@ -73,25 +74,16 @@ def delete(root, x):
         delete(root, succ)
         to_delete.val = s_val
         
-def predecessor(x): #poprzednik elementu x
-    if x.left is not None:
-        x = x.left
-        while x.right is not None:
-            x = x.right
-            return x
-    else:
-        p = x.parent
-        if p is None:
-            return -1
-        if x == p.left:
-            return p.parent
-        else:
-            return p
+def find_ith(i, root): #znalezienie i-tego co do wielkosci elementu
+    r = root
+    while i > 0:
+        if r.left is not None and r.left.nr_of_elements >= i:
+            r = r.left
+        elif r.right is not None:
+            if r.left is not None:
+                i -= r.left.nr_of_elements + 1
+            else:
+                i -= 1
+            r = r.right
+    return r
 
-def successor(x): #nastepnik elementu x
-    if x.right is None:
-        return -1
-    x = x.right
-    while x.left is not None:
-        x = x.left
-    return x
